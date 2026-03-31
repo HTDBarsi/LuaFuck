@@ -1,8 +1,3 @@
-local config = {
-    CellLimit = 30000, -- og limit
-    CellSize = 2^8 -- 1 byte
-}
-
 function getInputFile()
     assert(arg[1], "Please specify the input file!")
     local inputFile = io.open(arg[1])
@@ -14,16 +9,14 @@ function out(byte)
     io.write(byte and string.char(byte) or "")
 end
 
-local output = config.DirectOutput and function(text)  end
-
 local code = {}
 getInputFile():gsub('.', function(instruction)
     table.insert(code, instruction)
 end)
 
 local cell = {
-    Limit = config.CellLimit,
-    Size = config.CellSize
+    Limit = 30000,
+    Size = 2^8
 }
 
 local codeSize = #code
@@ -81,14 +74,3 @@ while pos < codeSize do
     pos = pos + 1
     instructions[code[pos]]()
 end
-
---[[
-    >	Increment the data pointer by one (to point to the next cell to the right).
-    <	Decrement the data pointer by one (to point to the next cell to the left). Undefined if at 0.
-    +	Increment the byte at the data pointer by one modulo 256.
-    -	Decrement the byte at the data pointer by one modulo 256.
-    .	Output the byte at the data pointer.
-    ,	Accept one byte of input, storing its value in the byte at the data pointer.[b]
-    [	If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
-    ]	If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.[c]
-]]
